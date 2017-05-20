@@ -1,0 +1,81 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        // google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart(digit) {
+        	var base = parseInt($("#base").val());
+        	var repr = getRepresentationInBase();
+			console.log(repr)
+			var numSectors = base - 1;
+        	var data = new Array(numSectors).fill(["blah", 1]);
+        	var data = google.visualization.arrayToDataTable(
+	        	[["c1", "c2"]].concat(data)
+			);
+			for (var i=0; i<repr.length; i++){
+				var options = {
+		        	title: repr[i],
+		        	colors: new Array(repr[i]).fill('#e0440e').concat(new Array(numSectors-repr[i]).fill('#f6c7b6')),
+		        	enableInteractivity: false,
+		        	fontSize: 32,
+		        	legend: {position: 'none'}
+		        };
+		        var chart = new google.visualization.PieChart(document.getElementById('piechart'+i));
+		        chart.draw(data, options);
+			}
+        }
+
+        function getRepresentationInBase() {
+        	var base = parseInt($("#base").val());
+        	var number = parseInt($("#points").val());
+			var repr = [];
+			console.log("base number", base, number)
+			while (number>0) {
+				digit=number%base;
+				number = Math.floor(number/base);
+				console.log(digit, number)
+				repr.push(digit)
+			}
+			repr.reverse();
+			//make sure repr is 3 digits long
+			while (repr.length<3)
+				repr.push(0)
+			return repr;
+        }
+
+        function updateValue(){
+        	$('#pointsText').text($(this).val());
+	        drawChart();
+        }
+
+	    $(function () {
+			$('#base').on('change', function () {
+		        $('#points').attr({"min": 0, "max": Math.pow($(this).val(), 3)-1});
+		        $('#points').val(0);
+		        $('#pointsText').text($('#points').val());
+		        updateValue();
+		    });
+		    // setup an event handler to set the text when the range value is dragged (see event for input) or changed (see event for change)
+		    $('#points').on('change', updateValue);
+		    google.charts.setOnLoadCallback(drawChart);
+		});
+
+    </script>
+	</head>
+	<body>
+	    <div id="piechart0" style="width: 300px; height: 200px;"></div>
+	    <div id="piechart1" style="width: 300px; height: 200px;"></div>
+	    <div id="piechart2" style="width: 300px; height: 200px;"></div>
+	    <div>
+			Base:<input type="text" id="base" value="10">
+		</div>
+
+		<div>
+			<input type="range" id="points" value="0" min="0" max="999">
+			Points:<label id="pointsText" for="points">0</label>
+		</div>
+  	</body>
+</html>
