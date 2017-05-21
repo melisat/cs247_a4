@@ -1,7 +1,11 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  	<meta charset="utf-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
         google.charts.load('current', {'packages':['corechart']});
         // google.charts.setOnLoadCallback(drawChart);
@@ -39,43 +43,48 @@
 				console.log(digit, number)
 				repr.push(digit)
 			}
-			repr.reverse();
 			//make sure repr is 3 digits long
 			while (repr.length<3)
 				repr.push(0)
+			repr.reverse();
 			return repr;
         }
 
         function updateValue(){
-        	$('#pointsText').text($(this).val());
+        	$('#pointsText').text($('#points').val());
 	        drawChart();
         }
 
 	    $(function () {
 			$('#base').on('change', function () {
-		        $('#points').attr({"min": 0, "max": Math.pow($(this).val(), 3)-1});
-		        $('#points').val(0);
-		        $('#pointsText').text($('#points').val());
+				var max = Math.pow($(this).val(), 3)-1;
+				var currVal = $('#points').val();
+				var newVal = Math.min(max, currVal);
+		        $('#points').attr({"min": 0, "max": max});
+		        $('#points').val(newVal);
 		        updateValue();
 		    });
 		    // setup an event handler to set the text when the range value is dragged (see event for input) or changed (see event for change)
-		    $('#points').on('change', updateValue);
+		    $('#points').on('input', updateValue);
 		    google.charts.setOnLoadCallback(drawChart);
 		});
 
     </script>
 	</head>
 	<body>
-	    <div id="piechart0" style="width: 300px; height: 200px;"></div>
-	    <div id="piechart1" style="width: 300px; height: 200px;"></div>
-	    <div id="piechart2" style="width: 300px; height: 200px;"></div>
-	    <div>
-			Base:<input type="text" id="base" value="10">
-		</div>
-
-		<div>
-			<input type="range" id="points" value="0" min="0" max="999">
-			Points:<label id="pointsText" for="points">0</label>
+		<div class="container-fluid">
+		    <div class="row">
+				Base:<input type="text" id="base" value="10">
+			</div>
+			<div class="row">
+			    <div class="col-sm-4" id="piechart0" style="width: 300px; height: 200px;"></div>
+			    <div class="col-sm-4" id="piechart1" style="width: 300px; height: 200px;"></div>
+			    <div class="col-sm-4" id="piechart2" style="width: 300px; height: 200px;"></div>
+		    </div>
+			<div class="row">
+				<div class="col-sm-8"> <input type="range" id="points" value="0" min="0" max="999"> </div>
+				<div class="col-sm-4"> Points:<label id="pointsText" for="points">0</label> </div>
+			</div>
 		</div>
   	</body>
 </html>
