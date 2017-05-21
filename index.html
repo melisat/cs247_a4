@@ -10,11 +10,12 @@
         google.charts.load('current', {'packages':['corechart']});
         // google.charts.setOnLoadCallback(drawChart);
 
-        function drawChart(digit) {
+        function drawChart() {
         	var base = parseInt($("#base").val());
         	var repr = getRepresentationInBase();
 			console.log(repr)
 			var numSectors = base - 1;
+			console.log(numSectors)
         	var data = new Array(numSectors).fill(["blah", 1]);
         	var data = google.visualization.arrayToDataTable(
 	        	[["c1", "c2"]].concat(data)
@@ -25,7 +26,9 @@
 		        	colors: new Array(repr[i]).fill('#e0440e').concat(new Array(numSectors-repr[i]).fill('#f6c7b6')),
 		        	enableInteractivity: false,
 		        	fontSize: 32,
-		        	legend: {position: 'none'}
+		        	legend: {position: 'none'},
+		        	height: 300
+
 		        };
 		        var chart = new google.visualization.PieChart(document.getElementById('piechart'+i));
 		        chart.draw(data, options);
@@ -34,7 +37,7 @@
 
         function getRepresentationInBase() {
         	var base = parseInt($("#base").val());
-        	var number = parseInt($("#points").val());
+        	var number = parseInt($("#number").val());
 			var repr = [];
 			console.log("base number", base, number)
 			while (number>0) {
@@ -50,22 +53,31 @@
 			return repr;
         }
 
-        function updateValue(){
-        	$('#pointsText').text($('#points').val());
+        function updateValue(newVal){
+        	$('#numberText').val(newVal);
+        	$('#number').val(newVal);
 	        drawChart();
         }
 
 	    $(function () {
 			$('#base').on('change', function () {
 				var max = Math.pow($(this).val(), 3)-1;
-				var currVal = $('#points').val();
+				var currVal = $('#number').val();
 				var newVal = Math.min(max, currVal);
-		        $('#points').attr({"min": 0, "max": max});
-		        $('#points').val(newVal);
-		        updateValue();
+		        $('#number').attr({"min": 0, "max": max});
+		        $('#number').val(newVal);
+		        $('#numberText').val(newVal);
+		        drawChart();
 		    });
-		    // setup an event handler to set the text when the range value is dragged (see event for input) or changed (see event for change)
-		    $('#points').on('input', updateValue);
+
+		    $('#number').on('input', function(){
+		    	updateValue($("#number").val());
+		    });
+
+		    $('#numberText').on('change', function(){
+		    	updateValue($("#numberText").val());
+		    });
+
 		    google.charts.setOnLoadCallback(drawChart);
 		});
 
@@ -74,16 +86,21 @@
 	<body>
 		<div class="container-fluid">
 		    <div class="row">
-				Base:<input type="text" id="base" value="10">
+				<div class="col-sm-1">
+				<label for="base">Base:</label>
+				<input class="form-control" type="text" id="base" value="10"></div>
 			</div>
 			<div class="row">
-			    <div class="col-sm-4" id="piechart0" style="width: 300px; height: 200px;"></div>
-			    <div class="col-sm-4" id="piechart1" style="width: 300px; height: 200px;"></div>
-			    <div class="col-sm-4" id="piechart2" style="width: 300px; height: 200px;"></div>
+			    <div class="col-sm-4" id="piechart0"></div>
+			    <div class="col-sm-4" id="piechart1"></div>
+			    <div class="col-sm-4" id="piechart2"></div>
 		    </div>
 			<div class="row">
-				<div class="col-sm-8"> <input type="range" id="points" value="0" min="0" max="999"> </div>
-				<div class="col-sm-4"> Points:<label id="pointsText" for="points">0</label> </div>
+				<div class="col-sm-11"> <input type="range" id="number" value="0" min="0" max="999"> </div>
+				<div class="col-sm-1"> 
+					<label for="numberText">Value(base 10):</label>
+					<input class="form-control" type="text" id="numberText" value="0"></div>
+				</div>
 			</div>
 		</div>
   	</body>
